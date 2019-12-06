@@ -1,4 +1,4 @@
-package com.examReg.Repository;
+package com.examReg.repository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -69,5 +69,23 @@ public class UserRepository {
 	public List<User> getAll(){
 		String sql ="SELECT * FROM user";
 		return jdbcTemplate.query(sql, new BeanPropertyRowMapper<User>(User.class));
+	}
+	public int doiMk(String username, String newPass) {
+		String sql ="UPDATE user SET pass =:newPass WHERE username =:username;";
+		Map<String,String> maps = new HashMap<String,String>();
+		maps.put("newPass", newPass);
+		maps.put("username",username);
+		return jdbcTemplate.update(sql, maps);
+	}
+	public User findByUsername(String userName) {
+		
+		String sql="SELECT * FROM user where username =:userName;";
+		Map<String, Object> argMap = new HashMap<>();
+		argMap.put("userName", userName);
+		try {
+		return jdbcTemplate.queryForObject(sql, argMap, new BeanPropertyRowMapper<User>(User.class));
+		}catch (Exception e) {
+			return null;
+		}
 	}
 }

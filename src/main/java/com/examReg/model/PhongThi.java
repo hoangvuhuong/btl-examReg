@@ -3,7 +3,7 @@ package com.examReg.model;
 public class PhongThi {
 	private int id;
 	private int slot;
-	private String varchar;
+	private String name;
 	public int getId() {
 		return id;
 	}
@@ -16,11 +16,11 @@ public class PhongThi {
 	public void setSlot(int slot) {
 		this.slot = slot;
 	}
-	public String getVarchar() {
-		return varchar;
+	public String getName() {
+		return name;
 	}
-	public void setVarchar(String varchar) {
-		this.varchar = varchar;
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

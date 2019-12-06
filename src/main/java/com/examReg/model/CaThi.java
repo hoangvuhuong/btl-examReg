@@ -1,11 +1,16 @@
 package com.examReg.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class CaThi {
 	private int id;
 	private Date ngayThi;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm")
 	private Date start;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm")
 	private Date end;
 	private int kithiId;
 	private String name;

@@ -1,15 +1,14 @@
-package com.examReg.Repository;
+package com.examReg.repository;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.examReg.model.HocPhan;
-import com.fasterxml.jackson.core.sym.Name;
-
 @Repository
 public class HocPhanRepository {
 	@Autowired
@@ -23,7 +22,12 @@ public class HocPhanRepository {
 		return jdbcTemplate.update(sql,maps);
 		
 	}
-//	public HocPhan getHocPhan(HocPhan hp) {
-//		String sql = "SELECT * FROM hoc_phan";
-//	}
+	public HocPhan getHocPhan(HocPhan hp) {
+		String sql = "SELECT * FROM hoc_phan WHERE name =:name AND cathi_id =:cathiId AND ma_hp=:maHp";
+		Map<String , Object> maps = new HashMap<String , Object>();
+		maps.put("name", hp.getName());
+		maps.put("cathiId",hp.getCathiId());
+		maps.put("maHp", hp.getMaHp());
+		return jdbcTemplate.queryForObject(sql, maps, new BeanPropertyRowMapper<HocPhan>(HocPhan.class));
+	}
 }

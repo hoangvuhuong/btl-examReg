@@ -1,4 +1,4 @@
-package com.examReg.Repository;
+package com.examReg.repository;
 
 import java.util.HashMap;
 import java.util.Map;

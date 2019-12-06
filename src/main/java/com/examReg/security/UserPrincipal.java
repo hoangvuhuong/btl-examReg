@@ -20,6 +20,7 @@ public class UserPrincipal implements UserDetails{
 	private String name;
 	private Collection<? extends GrantedAuthority> authorities;
 	private Map<String, Object> attributes;
+	public UserPrincipal() {}
 	public UserPrincipal(int userId, String userName, String name ,Collection<? extends GrantedAuthority> authorities) {
 
 		this.userId = userId;

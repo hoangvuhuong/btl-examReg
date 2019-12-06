@@ -1,4 +1,4 @@
-package com.examReg.Repository;
+package com.examReg.repository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,12 +27,12 @@ public class CaThiRepository {
 		 
 	}
 	public CaThi getCaThi(CaThi caThi) {
-		String sql = "SELECT * FROM ca_thi WHERE ngay_thi = :ngayThi and start =:start and end =:end and name=:name and kithi_id=:kithiId;";
+		String sql = "SELECT * FROM ca_thi WHERE ngay_thi = :ngayThi and start =:start and end =:end and name=:name;";
 		Map<String, Object> maps = new HashMap<String, Object>();
 		maps.put("ngayThi", caThi.getNgayThi());
 		maps.put("start", caThi.getStart());
 		maps.put("end", caThi.getEnd());
-		maps.put("kithiId", caThi.getKithiId());
+		
 		maps.put("name", caThi.getName());
 		return  jdbcTemplate.queryForObject(sql, maps,new BeanPropertyRowMapper<CaThi>(CaThi.class));
 		 
