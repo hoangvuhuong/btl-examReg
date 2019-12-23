@@ -8,7 +8,7 @@ public class ResponseCreateExam {
 	private List<String> listStudent;
 	private List<String> banStudent;
 	private CaThi caThi;
-	private String phongThi;
+	private List<String> phongThi;
 	public String getCourseName() {
 		return courseName;
 	}
@@ -40,11 +40,12 @@ public class ResponseCreateExam {
 	public void setCaThi(CaThi caThi) {
 		this.caThi = caThi;
 	}
-	public String getPhongThi() {
+	public List<String> getPhongThi() {
 		return phongThi;
 	}
-	public void setPhongThi(String phongThi) {
+	public void setPhongThi(List<String> phongThi) {
 		this.phongThi = phongThi;
 	}
+	
 	
 }

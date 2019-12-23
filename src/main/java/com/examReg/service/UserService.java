@@ -1,5 +1,9 @@
 package com.examReg.service;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -10,16 +14,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.examReg.contract.ResponseContract;
 import com.examReg.model.CaThi;
 import com.examReg.model.CaThiPhongThi;
+import com.examReg.model.Exam;
+import com.examReg.model.HocPhan;
 import com.examReg.model.PhongThi;
+import com.examReg.model.ResponseRegis;
 import com.examReg.model.User;
 import com.examReg.model.UserCathi;
 import com.examReg.model.UserHocphan;
 import com.examReg.repository.CaThiPhongThiRepository;
 import com.examReg.repository.CaThiRepository;
+import com.examReg.repository.HocPhanRepository;
 import com.examReg.repository.KiThiRepository;
 import com.examReg.repository.PhongThiRepository;
 import com.examReg.repository.UserCathiRepository;
@@ -28,25 +37,35 @@ import com.examReg.repository.UserRepository;
 import com.examReg.security.TokenProvider;
 import com.examReg.security.UserPrincipal;
 
-
 @Service
 public class UserService implements IUserService {
 	@Autowired
 	KiThiRepository kiThiRep;
+
 	@Autowired
 	PhongThiRepository phongthiRep;
+
 	@Autowired
 	private CaThiPhongThiRepository caThiphongThiRepository;
+
 	@Autowired
 	private UserRepository userRepository;
+
 	@Autowired
 	private TokenProvider tokenProvider;
+
 	@Autowired
 	CaThiRepository cathiRepository;
+
 	@Autowired
 	UserCathiRepository ucRepository;
+
 	@Autowired
 	UserHocPhanRepository uhRepository;
+
+	@Autowired
+	HocPhanRepository hocphanRepository;
+
 	@Override
 	public String login(String userName, String pass) {
 		Optional<User> userOptional = userRepository.findByUserName(userName);
@@ -85,7 +104,11 @@ public class UserService implements IUserService {
 	@Override
 	public ResponseContract<?> getAll() {
 		try {
-			return new ResponseContract<List<User>>("200", "Ok", userRepository.getAll());
+			List<String> listUsername = new ArrayList<String>();
+			for (User user : userRepository.getAll()) {
+				listUsername.add(user.getUserName());
+			}
+			return new ResponseContract<List<String>>("200", "Ok", listUsername);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -94,31 +117,32 @@ public class UserService implements IUserService {
 	}
 
 	@Override
+	@Transactional(rollbackFor = Exception.class)
 	public ResponseContract<?> taoCathi(CaThi cathi, String tenPhongThi) {
 		try {
-			
-			cathiRepository.create(cathi);
-			CaThi ct = cathiRepository.getCaThi(cathi);
+
+			int cathiId = cathiRepository.create(cathi);
+			// CaThi ct = cathiRepository.getCaThi(cathi);
 			PhongThi pt = phongthiRep.findByName(tenPhongThi);
 			CaThiPhongThi ctpt = new CaThiPhongThi();
-			ctpt.setCathiId(ct.getId());
+			ctpt.setCathiId(cathiId);
 			ctpt.setPhongthiId(pt.getId());
 			ctpt.setSlotConLai(pt.getSlot());
 			caThiphongThiRepository.create(ctpt);
-			
 
-			return null;
+			return new ResponseContract<Integer>("200", "OK", cathiId);
 
 		} catch (Exception e) {
 			// TODO: handle exception
+			return new ResponseContract<String>("Loi", e.getMessage(), null);
 		}
-		return null;
+
 	}
 
 	@Override
-	public int doiMk(Map<String,String> input) {
+	public int doiMk(Map<String, String> input) {
 		try {
-			if(input.get("pass1").equals(input.get("pass2"))) {
+			if (input.get("pass1").equals(input.get("pass2"))) {
 				String newPass = encrytePassword(input.get("pass1"));
 				return userRepository.doiMk(SecurityContextHolder.getContext().getAuthentication().getName(), newPass);
 			}
@@ -128,19 +152,19 @@ public class UserService implements IUserService {
 			return 0;
 		}
 		return 0;
-		
+
 	}
+
 	@Override
 	public int createUserCathi(int caThiId, String tenPhong, List<String> listUser) {
 		try {
 			PhongThi pt = phongthiRep.findByName(tenPhong);
-			for(String username : listUser) {
+			for (String username : listUser) {
 				Optional<User> userOptional = userRepository.findByUserName(username);
 				User user = null;
-				if(userOptional.isPresent()) {
+				if (userOptional.isPresent()) {
 					user = userOptional.get();
-				}
-				else {
+				} else {
 					return 0;
 				}
 				String SBD = pt.getName() + username;
@@ -150,25 +174,24 @@ public class UserService implements IUserService {
 				uc.setSbd(SBD);
 				uc.setUserId(user.getUserId());
 				ucRepository.create(uc);
-				
-		}
+
+			}
 			return listUser.size();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 			return 0;
 		}
-		
-		
-		}
+
+	}
 
 	@Override
 	public int updateCamthi(List<String> listUser, int hocPhanId) {
 		// TODO Auto-generated method stub
-		
-		for(String username : listUser) {
+
+		for (String username : listUser) {
 			User user = userRepository.findByUsername(username);
-			if(user != null) {
+			if (user != null) {
 				uhRepository.updateDK(user.getUserId(), hocPhanId, false);
 			}
 		}
@@ -178,19 +201,154 @@ public class UserService implements IUserService {
 	@Override
 	public int createUserHocphan(int hocPhanId, List<String> listUser) {
 		// TODO Auto-generated method stub
-		for(String username : listUser) {
+		for (String username : listUser) {
 			User user = userRepository.findByUsername(username);
-			if(user != null) {
-			UserHocphan uh = new UserHocphan();
-			uh.setHocphanId(hocPhanId);
-			uh.setUserId(user.getUserId());
-			uh.setDkThi(true);
-			uhRepository.create(uh);
+			if (user != null) {
+				UserHocphan uh = new UserHocphan();
+				uh.setHocphanId(hocPhanId);
+				uh.setUserId(user.getUserId());
+				uh.setDkThi(true);
+				uhRepository.create(uh);
 			}
 		}
 		return listUser.size();
 	}
-		
-		
-	
+
+	@Override
+	public ResponseContract<?> getAllHocPhan() {
+		try {
+			return new ResponseContract<List<HocPhan>>("200", "OK", hocphanRepository.getAll());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseContract<String>("Loi", e.getMessage(), null);
+		}
+	}
+
+	@Override
+	public ResponseContract<?> getAllHocPhanByUserId(int userId) {
+		try {
+			List<Integer> listHocPhanId = uhRepository.getListHocPhanIdByUserId(userId);
+			List<HocPhan> listHocPhan = new ArrayList<HocPhan>();
+			for (Integer id : listHocPhanId) {
+				listHocPhan.add(hocphanRepository.getById(id));
+			}
+			return new ResponseContract<List<HocPhan>>("200", "OK", listHocPhan);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseContract<String>("Loi", e.getMessage(), null);
+		}
+	}
+
+	@Override
+	public ResponseContract<?> getAllExam() {
+		try {
+			List<Exam> listExam = new ArrayList<Exam>();
+			List<CaThi> listCaThi = cathiRepository.getAll();
+			for (CaThi cathi : listCaThi) {
+				List<Integer> listPhongThiId = caThiphongThiRepository.getPhongthiIdByCathiId(cathi.getId());
+				HocPhan hocphan = hocphanRepository.getByCaThiId(cathi.getId());
+				for (Integer id : listPhongThiId) {
+					SimpleDateFormat hour = new SimpleDateFormat("HH:mm");
+					SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
+					Exam exam = new Exam();
+					exam.setCathiId(cathi.getId());
+					exam.setTenCaThi(cathi.getName());
+					String ngayThi = date.format(cathi.getNgayThi());
+					exam.setDate(ngayThi);
+					String end = hour.format(cathi.getEnd());
+					exam.setEnd(end);
+					String start = hour.format(cathi.getStart());
+					exam.setStart(start);
+					exam.setMaMon(hocphan.getMaHp());
+					exam.setTenMon(hocphan.getName());
+					exam.setTenPhongThi(phongthiRep.getNameById(id));
+					listExam.add(exam);
+				}
+			}
+			return new ResponseContract<List<Exam>>("200", "OK", listExam);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseContract<String>("Loi", e.getMessage(), null);
+		}
+	}
+
+	@Override
+	public ResponseContract<?> getAllExamByUserId(int userId) {
+		try {
+			List<Exam> listExams = new ArrayList<Exam>();
+			// lay danh sach hoc phan id
+			List<Integer> listHocPhanId = uhRepository.getListHocPhanIdByUserId(userId);
+			for (Integer hocphanId : listHocPhanId) {
+				
+				HocPhan hocPhan = hocphanRepository.getById(hocphanId);
+				CaThi cathi = cathiRepository.getById(hocPhan.getCathiId());
+				List<Integer> phongthiIds = caThiphongThiRepository.getPhongthiIdByCathiId(cathi.getId());
+				for (Integer phongthiId : phongthiIds) {
+					SimpleDateFormat hour = new SimpleDateFormat("HH:mm");
+					SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
+					Exam exam = new Exam();
+					exam.setCathiId(cathi.getId());
+					exam.setTenCaThi(cathi.getName());
+					String ngayThi = date.format(cathi.getNgayThi());
+					exam.setDate(ngayThi);
+					String end = hour.format(cathi.getEnd());
+					exam.setEnd(end);
+					String start = hour.format(cathi.getStart());
+					exam.setStart(start);
+					exam.setTenMon(hocPhan.getName());
+					exam.setMaMon(hocPhan.getMaHp());
+					exam.setTenPhongThi(phongthiRep.getNameById(phongthiId));
+					exam.setDkThi(uhRepository.getUserHocphan(userId, hocPhan.getId()).isDkThi());
+					listExams.add(exam);
+				}
+			}
+			return new ResponseContract<List<Exam>>("200", "OK", listExams);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseContract<String>("Loi", e.getMessage(), null);
+		}
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public ResponseContract<?> DangKiThi(ResponseRegis resonseReg) {
+		try {
+			if (resonseReg.getIsRegis() == true) {
+				int phongthiId = phongthiRep.getIdByName(resonseReg.getTenPhong());
+				UserCathi userCathi = new UserCathi();
+				userCathi.setCathiId(resonseReg.getCathiId());
+				userCathi.setPhongthiId(phongthiId);
+				userCathi.setUserId(resonseReg.getUserId());
+				String sbd = resonseReg.getUserId().toString();
+				userCathi.setSbd(sbd);
+
+				// cap nhat slot
+				CaThiPhongThi ctpt = caThiphongThiRepository.getByIds(resonseReg.getCathiId(), phongthiId);
+				if(ctpt.getSlotConLai() > 0) {
+				int slot = ctpt.getSlotConLai() - 1;
+				ctpt.setSlotConLai(slot);
+				caThiphongThiRepository.updateSlot(ctpt);
+				return new ResponseContract<Integer>("200", "OK", ucRepository.create(userCathi));
+				}
+				return new ResponseContract<String>("Loi", null, "Ca thi không còn chỗ nữa!!");
+			} else { // false khi huy dang ki
+				int phongthiId = phongthiRep.getIdByName(resonseReg.getTenPhong());
+				UserCathi userCathi = ucRepository.getByIds( resonseReg.getUserId(),resonseReg.getCathiId(),
+						phongthiId);
+				// cap nhat slot
+				CaThiPhongThi ctpt = caThiphongThiRepository.getByIds(resonseReg.getCathiId(), phongthiId);
+				int slot = ctpt.getSlotConLai() + 1;
+				ctpt.setSlotConLai(slot);
+				caThiphongThiRepository.updateSlot(ctpt);
+				return new ResponseContract<Integer>("200", "OK", ucRepository.delete(userCathi.getId()));
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return new ResponseContract<String>("Loi", e.getMessage(), null);
+		}
+	}
+
 }

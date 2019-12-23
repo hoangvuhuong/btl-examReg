@@ -1,9 +1,12 @@
 package com.examReg.repository;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -34,5 +37,19 @@ public class UserCathiRepository {
 		maps.put("phongthiId", uc.getPhongthiId());
 		maps.put("sbd", uc.getSbd());
 		return jdbcTemplate.queryForObject(sql, maps, new BeanPropertyRowMapper<UserCathi>(UserCathi.class));
+	}
+	public UserCathi getByIds(int userId, int cathiId, int phongthiId) {
+		String sql = "SELECT * FROM user_cathi WHERE user_id =:userId AND cathi_id =:cathiId AND phongthi_id =:phongthiId;";
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put("userId", userId);
+		maps.put("cathiId", cathiId);
+		maps.put("phongthiId", phongthiId);
+		return jdbcTemplate.queryForObject(sql, maps, new BeanPropertyRowMapper<UserCathi>(UserCathi.class));
+	}
+	public int delete(int id) {
+		String sql = "DELETE FROM user_cathi WHERE id =:id;";
+		Map<String,Object> maps = new HashMap<String, Object>();
+		maps.put("id", id);
+		return jdbcTemplate.update(sql,maps);
 	}
 }

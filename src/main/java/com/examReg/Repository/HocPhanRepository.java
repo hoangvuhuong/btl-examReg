@@ -1,6 +1,7 @@
 package com.examReg.repository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,4 +31,21 @@ public class HocPhanRepository {
 		maps.put("maHp", hp.getMaHp());
 		return jdbcTemplate.queryForObject(sql, maps, new BeanPropertyRowMapper<HocPhan>(HocPhan.class));
 	}
+	public List<HocPhan> getAll(){
+		String sql = "SELECT * FROM hoc_phan;";
+		return jdbcTemplate.query(sql,new HashMap<>(),new BeanPropertyRowMapper<HocPhan>(HocPhan.class));
+	}
+	public HocPhan getById(int id){
+		String sql = "SELECT * FROM hoc_phan WHERE id =:id";
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put("id", id);
+		return jdbcTemplate.queryForObject(sql, maps, new BeanPropertyRowMapper<HocPhan>(HocPhan.class));
+	}
+	public HocPhan getByCaThiId(int cathiId) {
+		String sql = "SELECT * FROM hoc_phan WHERE cathi_id =:cathiId;";
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put("cathiId", cathiId);
+		return jdbcTemplate.queryForObject(sql, maps, new BeanPropertyRowMapper<HocPhan>(HocPhan.class));
+	}
+	
 }

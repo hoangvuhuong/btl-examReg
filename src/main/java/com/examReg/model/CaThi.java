@@ -7,10 +7,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class CaThi {
 	private int id;
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date ngayThi;
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm")
+	@JsonFormat(pattern="HH:mm")
 	private Date start;
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm")
+	@JsonFormat(pattern="HH:mm")
 	private Date end;
 	private int kithiId;
 	private String name;

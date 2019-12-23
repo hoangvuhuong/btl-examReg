@@ -28,4 +28,16 @@ public class PhongThiRepository {
 		maps.put("name", name);
 		return jdbcTemplate.queryForObject(sql,maps, new BeanPropertyRowMapper<PhongThi>(PhongThi.class));
 	}
+	public String getNameById(int id) {
+		String sql= "SELECT name FROM phong_thi WHERE id =:id;";
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put("id", id);
+		return jdbcTemplate.queryForObject(sql, maps, String.class);
+	}
+	public Integer getIdByName(String name) {
+		String sql = "SELECT id FROM phong_thi WHERE name =:name";
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put("name",name);
+		return jdbcTemplate.queryForObject(sql,maps, Integer.class);
+	}
 }
