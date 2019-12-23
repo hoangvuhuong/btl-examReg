@@ -25,6 +25,7 @@ import com.examReg.model.PhongThi;
 import com.examReg.model.ResponseRegis;
 import com.examReg.model.User;
 import com.examReg.model.UserCathi;
+import com.examReg.model.UserDownload;
 import com.examReg.model.UserHocphan;
 import com.examReg.repository.CaThiPhongThiRepository;
 import com.examReg.repository.CaThiRepository;
@@ -280,7 +281,7 @@ public class UserService implements IUserService {
 			// lay danh sach hoc phan id
 			List<Integer> listHocPhanId = uhRepository.getListHocPhanIdByUserId(userId);
 			for (Integer hocphanId : listHocPhanId) {
-				
+
 				HocPhan hocPhan = hocphanRepository.getById(hocphanId);
 				CaThi cathi = cathiRepository.getById(hocPhan.getCathiId());
 				List<Integer> phongthiIds = caThiphongThiRepository.getPhongthiIdByCathiId(cathi.getId());
@@ -325,16 +326,16 @@ public class UserService implements IUserService {
 
 				// cap nhat slot
 				CaThiPhongThi ctpt = caThiphongThiRepository.getByIds(resonseReg.getCathiId(), phongthiId);
-				if(ctpt.getSlotConLai() > 0) {
-				int slot = ctpt.getSlotConLai() - 1;
-				ctpt.setSlotConLai(slot);
-				caThiphongThiRepository.updateSlot(ctpt);
-				return new ResponseContract<Integer>("200", "OK", ucRepository.create(userCathi));
+				if (ctpt.getSlotConLai() > 0) {
+					int slot = ctpt.getSlotConLai() - 1;
+					ctpt.setSlotConLai(slot);
+					caThiphongThiRepository.updateSlot(ctpt);
+					return new ResponseContract<Integer>("200", "OK", ucRepository.create(userCathi));
 				}
 				return new ResponseContract<String>("Loi", null, "Ca thi không còn chỗ nữa!!");
 			} else { // false khi huy dang ki
 				int phongthiId = phongthiRep.getIdByName(resonseReg.getTenPhong());
-				UserCathi userCathi = ucRepository.getByIds( resonseReg.getUserId(),resonseReg.getCathiId(),
+				UserCathi userCathi = ucRepository.getByIds(resonseReg.getUserId(), resonseReg.getCathiId(),
 						phongthiId);
 				// cap nhat slot
 				CaThiPhongThi ctpt = caThiphongThiRepository.getByIds(resonseReg.getCathiId(), phongthiId);
@@ -343,12 +344,44 @@ public class UserService implements IUserService {
 				caThiphongThiRepository.updateSlot(ctpt);
 				return new ResponseContract<Integer>("200", "OK", ucRepository.delete(userCathi.getId()));
 			}
-			
+
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			return new ResponseContract<String>("Loi", e.getMessage(), null);
 		}
+	}
+
+	@Override
+	public ResponseContract<?> getDownload(int userId) {
+		try {
+		List<UserDownload> userDowns = new ArrayList<UserDownload>();
+		List<UserCathi> listUserCathi = ucRepository.getByUserId(userId);
+		for (UserCathi userCathi : listUserCathi) {
+			UserDownload userDown = new UserDownload();
+			userDown.setCathiId(userCathi.getCathiId());
+			userDown.setSbd(userCathi.getSbd());
+			userDown.setTenPhongThi(phongthiRep.getNameById(userCathi.getPhongthiId()));
+			CaThi cathi = cathiRepository.getById(userCathi.getCathiId());
+			SimpleDateFormat hour = new SimpleDateFormat("HH:mm");
+			SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
+			String ngayThi = date.format(cathi.getNgayThi());
+			String end = hour.format(cathi.getEnd());
+
+			String start = hour.format(cathi.getStart());
+			userDown.setDate(ngayThi);
+			userDown.setEnd(end);
+			userDown.setStart(start);
+			userDown.setTenCaThi(cathi.getName());
+			userDown.setTenMon(hocphanRepository.getByCaThiId(userCathi.getCathiId()).getName());
+			userDown.setMaMon(hocphanRepository.getByCaThiId(userCathi.getCathiId()).getMaHp());
+			userDowns.add(userDown);
+		}			
+		return new ResponseContract<List<UserDownload>>("200","OK", userDowns);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseContract<String>("Loi", e.getMessage(), null);
+		}
+		
 	}
 
 }

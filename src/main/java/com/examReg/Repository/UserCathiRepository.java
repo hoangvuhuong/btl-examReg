@@ -2,6 +2,7 @@ package com.examReg.repository;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowire;
@@ -51,5 +52,12 @@ public class UserCathiRepository {
 		Map<String,Object> maps = new HashMap<String, Object>();
 		maps.put("id", id);
 		return jdbcTemplate.update(sql,maps);
+	}
+	
+	public List<UserCathi> getByUserId(int userId){
+		String sql = "SELECT * FROM user_cathi WHERE user_id =:userId;";
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put("userId", userId);
+		return jdbcTemplate.query(sql, maps, new BeanPropertyRowMapper<UserCathi>(UserCathi.class));
 	}
 }

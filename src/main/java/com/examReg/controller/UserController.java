@@ -31,7 +31,7 @@ public class UserController {
 			return new ResponseContract<String>("Loi", e.getMessage(),null ) ;
 		}
 	}
-	@GetMapping("/get-subjects/{id}")
+	@GetMapping("/{id}/get-subjects")
 	public ResponseContract<?> getCathiByUserId(@PathVariable Integer id){
 		return userService.getAllExamByUserId(id);
 	}
@@ -47,5 +47,9 @@ public class UserController {
 			}
 		}
 		return res;
+	}
+	@GetMapping("/{userId}/download")
+	public ResponseContract<?> download(@PathVariable Integer userId){
+		return userService.getDownload(userId);
 	}
 }

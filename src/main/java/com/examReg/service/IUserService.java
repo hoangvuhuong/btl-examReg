@@ -34,4 +34,6 @@ public interface IUserService {
 	public ResponseContract<?> getAllExamByUserId(int userId);
 	
 	public ResponseContract<?> DangKiThi(ResponseRegis resonseReg);
+	
+	public ResponseContract<?> getDownload(int userId);
 }
