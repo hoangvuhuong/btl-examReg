@@ -1,6 +1,7 @@
 package com.examReg.repository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +40,10 @@ public class PhongThiRepository {
 		Map<String, Object> maps = new HashMap<String, Object>();
 		maps.put("name",name);
 		return jdbcTemplate.queryForObject(sql,maps, Integer.class);
+	}
+	public List<String> getAll(){
+		
+		String sql = "SELECT name FROM phong_thi";
+		return jdbcTemplate.queryForList(sql, new HashMap<>(), String.class);
 	}
 }

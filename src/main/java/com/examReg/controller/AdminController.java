@@ -27,7 +27,7 @@ import com.examReg.service.UserService;
 
 @RestController
 @RequestMapping("/admin")
-//@PreAuthorize("hasRole('ROLE_ADMIN')")
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class AdminController {
 	@Autowired
 	IUserService userService;
@@ -93,7 +93,10 @@ public class AdminController {
 		}
 
 	}
-	
+	@GetMapping("/get-all-pt")
+	public ResponseContract<?> getAllPt(){
+		return userService.getAllPt();
+	}
 	//show tat ca hoc phan
 	@GetMapping("/show-subjects")
 	public ResponseContract<?> getAllSubjects(){

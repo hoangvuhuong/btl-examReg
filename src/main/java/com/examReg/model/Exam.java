@@ -10,6 +10,14 @@ public class Exam {
 	private String date;
 	private String tenPhongThi;
 	private Boolean dkThi;
+	private Boolean isDk;
+	
+	public Boolean getIsDk() {
+		return isDk;
+	}
+	public void setIsDk(Boolean isDk) {
+		this.isDk = isDk;
+	}
 	public Boolean getDkThi() {
 		return dkThi;
 	}

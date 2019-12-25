@@ -301,7 +301,9 @@ public class UserService implements IUserService {
 					exam.setMaMon(hocPhan.getMaHp());
 					exam.setTenPhongThi(phongthiRep.getNameById(phongthiId));
 					exam.setDkThi(uhRepository.getUserHocphan(userId, hocPhan.getId()).isDkThi());
+					exam.setIsDk(checkDK(userId, cathi.getId(), phongthiId));
 					listExams.add(exam);
+					
 				}
 			}
 			return new ResponseContract<List<Exam>>("200", "OK", listExams);
@@ -310,7 +312,16 @@ public class UserService implements IUserService {
 			return new ResponseContract<String>("Loi", e.getMessage(), null);
 		}
 	}
-
+	
+	private Boolean checkDK(int userId, int cathiId, int phongthiId) {
+		UserCathi userCathi = ucRepository.getByIds(userId, cathiId,
+				phongthiId);
+		if(userCathi != null) {
+			return true;
+		}
+		else
+			return false;
+	}
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public ResponseContract<?> DangKiThi(ResponseRegis resonseReg) {
@@ -382,6 +393,17 @@ public class UserService implements IUserService {
 			return new ResponseContract<String>("Loi", e.getMessage(), null);
 		}
 		
+	}
+
+	@Override
+	public ResponseContract<?> getAllPt() {
+		try {
+			return new ResponseContract<List<String>>("200", "OK",phongthiRep.getAll());
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return new ResponseContract<String>("Loi", e.getMessage(), null);
+		}
 	}
 
 }

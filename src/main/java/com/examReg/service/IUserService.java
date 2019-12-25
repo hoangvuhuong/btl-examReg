@@ -36,4 +36,6 @@ public interface IUserService {
 	public ResponseContract<?> DangKiThi(ResponseRegis resonseReg);
 	
 	public ResponseContract<?> getDownload(int userId);
+	
+	public ResponseContract<?> getAllPt();
 }

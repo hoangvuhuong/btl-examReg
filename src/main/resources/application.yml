@@ -11,9 +11,9 @@ spring:
 #    username: root
 # thymeleaf:
 #    cache: false
-    url: jdbc:mysql://us-cdbr-iron-east-05.cleardb.net:3306/heroku_275644b7faba7cb?useSSL=false&characterEncoding=utf8
-    password: 41f4dfd5
-    username: b1f0c8f7797d2e
+    url: jdbc:mysql://localhost:3306/exam_reg?useSSL=false&characterEncoding=utf8
+    password: huong20031999
+    username: root
 app:
   auth:
     tokenSecret: 926D96CHE46D92KL429D2751QC1BDBCC
