@@ -3,6 +3,8 @@ package com.examReg.service;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.ws.Response;
+
 import com.examReg.contract.ResponseContract;
 import com.examReg.model.CaThi;
 import com.examReg.model.ResponseRegis;
@@ -40,4 +42,6 @@ public interface IUserService {
 	public ResponseContract<?> getAllPt();
 	
 	public ResponseContract<?> adminDownload();
+	
+	public ResponseContract<?> deleteCourse(String tenMon, String tenPhongthi);
 }

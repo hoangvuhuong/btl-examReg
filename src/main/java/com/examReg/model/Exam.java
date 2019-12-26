@@ -11,7 +11,15 @@ public class Exam {
 	private String tenPhongThi;
 	private Boolean dkThi;
 	private Boolean isDk;
+	private Integer slotConLai;
 	
+	
+	public Integer getSlotConLai() {
+		return slotConLai;
+	}
+	public void setSlotConLai(Integer slotConLai) {
+		this.slotConLai = slotConLai;
+	}
 	public Boolean getIsDk() {
 		return isDk;
 	}

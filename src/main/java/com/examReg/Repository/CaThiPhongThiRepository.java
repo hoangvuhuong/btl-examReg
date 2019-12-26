@@ -52,4 +52,10 @@ public class CaThiPhongThiRepository {
 		return jdbcTemplate.queryForObject(sql, maps, new BeanPropertyRowMapper<CaThiPhongThi>(CaThiPhongThi.class));
 		
 	}
+	public int delete(int id) {
+		String sql = "DELETE FROM cathi_phongthi WHERE id=:id;";
+		Map<String, Object> maps = new HashMap<String , Object>();
+		maps.put("id", id);
+		return jdbcTemplate.update(sql, maps);
+	}
 }

@@ -21,73 +21,86 @@ import com.fasterxml.jackson.core.sym.Name;
 public class UserCathiRepository {
 	@Autowired
 	NamedParameterJdbcTemplate jdbcTemplate;
+
 	public int create(UserCathi uc) {
 		String sql = "INSERT INTO user_cathi(user_id, cathi_id , phongthi_id,sbd) VALUES (:userId, :cathiId, :phongthiId,:sbd);";
 		Map<String, Object> maps = new HashMap<String, Object>();
-		maps.put("userId",uc.getUserId());
-		maps.put("cathiId",uc.getCathiId());
+		maps.put("userId", uc.getUserId());
+		maps.put("cathiId", uc.getCathiId());
 		maps.put("phongthiId", uc.getPhongthiId());
 		maps.put("sbd", uc.getSbd());
-		return jdbcTemplate.update(sql,maps);
-		
+		return jdbcTemplate.update(sql, maps);
+
 	}
+
 	public UserCathi getUerCathi(UserCathi uc) {
 		String sql = "SELECT * FROM user_cathi WHERE user_id =:userId AND cathi_id =:cathiId AND phongthi_id =:phongthiId AND sbd =:sbd";
 		Map<String, Object> maps = new HashMap<String, Object>();
-		maps.put("userId",uc.getUserId());
-		maps.put("cathiId",uc.getCathiId());
+		maps.put("userId", uc.getUserId());
+		maps.put("cathiId", uc.getCathiId());
 		maps.put("phongthiId", uc.getPhongthiId());
 		maps.put("sbd", uc.getSbd());
 		return jdbcTemplate.queryForObject(sql, maps, new BeanPropertyRowMapper<UserCathi>(UserCathi.class));
 	}
+
 	public UserCathi getByIds(int userId, int cathiId, int phongthiId) {
 		try {
-		String sql = "SELECT * FROM user_cathi WHERE user_id =:userId AND cathi_id =:cathiId AND phongthi_id =:phongthiId;";
-		Map<String, Object> maps = new HashMap<String, Object>();
-		maps.put("userId", userId);
-		maps.put("cathiId", cathiId);
-		maps.put("phongthiId", phongthiId);
-		List<UserCathi> list = jdbcTemplate.query(sql, maps, new BeanPropertyRowMapper<UserCathi>(UserCathi.class));
-		if(!CommonUtil.isNull(list)) {
-			return list.get(0);
-		}
-		return null;
-		}catch (Exception e) {
+			String sql = "SELECT * FROM user_cathi WHERE user_id =:userId AND cathi_id =:cathiId AND phongthi_id =:phongthiId;";
+			Map<String, Object> maps = new HashMap<String, Object>();
+			maps.put("userId", userId);
+			maps.put("cathiId", cathiId);
+			maps.put("phongthiId", phongthiId);
+			List<UserCathi> list = jdbcTemplate.query(sql, maps, new BeanPropertyRowMapper<UserCathi>(UserCathi.class));
+			if (!CommonUtil.isNull(list)) {
+				return list.get(0);
+			}
+			return null;
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
+
 	public int delete(int id) {
 		String sql = "DELETE FROM user_cathi WHERE id =:id;";
-		Map<String,Object> maps = new HashMap<String, Object>();
+		Map<String, Object> maps = new HashMap<String, Object>();
 		maps.put("id", id);
-		return jdbcTemplate.update(sql,maps);
+		return jdbcTemplate.update(sql, maps);
 	}
-	
-	public List<UserCathi> getByUserId(int userId){
+
+	public List<UserCathi> getByUserId(int userId) {
 		String sql = "SELECT * FROM user_cathi WHERE user_id =:userId;";
 		Map<String, Object> maps = new HashMap<String, Object>();
 		maps.put("userId", userId);
 		return jdbcTemplate.query(sql, maps, new BeanPropertyRowMapper<UserCathi>(UserCathi.class));
 	}
-	public List<UserCathi> getByIds(int userId, int cathiId){
+
+	public List<UserCathi> getByIds(int userId, int cathiId) {
 		String sql = "SELECT * FROM user_cathi WHERE user_id =:userId AND cathi_id =:cathiId;";
-		
+
 		Map<String, Object> maps = new HashMap<String, Object>();
 		maps.put("userId", userId);
 		maps.put("cathiId", cathiId);
 		return jdbcTemplate.query(sql, maps, new BeanPropertyRowMapper<UserCathi>(UserCathi.class));
 	}
-	
-	public List<UserCathi> getByCathiId(int cathiId){
+
+	public List<UserCathi> getByCathiId(int cathiId) {
 		String sql = "SELECT * FROM user_cathi WHERE cathi_id =:cathiId;";
 		Map<String, Object> maps = new HashMap<String, Object>();
 		maps.put("cathiId", cathiId);
-		return jdbcTemplate.query(sql,maps ,new BeanPropertyRowMapper<UserCathi>(UserCathi.class));
+		return jdbcTemplate.query(sql, maps, new BeanPropertyRowMapper<UserCathi>(UserCathi.class));
 	}
-	
-	public List<UserCathi> getAll(){
+
+	public List<UserCathi> getAll() {
 		String sql = "SELECT * FROM user_cathi;";
 		return jdbcTemplate.query(sql, new HashMap<>(), new BeanPropertyRowMapper<UserCathi>(UserCathi.class));
+	}
+
+	public List<UserCathi> findByIds(int cathiId, int phongthiId) {
+		String sql = "SELECT * FROM user_cathi WHERE cathi_id = cathiId AND phongthi_id =:phongthiId;";
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put("cathiId", cathiId);
+		maps.put("phongthiId", phongthiId);
+		return jdbcTemplate.query(sql, maps, new BeanPropertyRowMapper<UserCathi>(UserCathi.class));
 	}
 }

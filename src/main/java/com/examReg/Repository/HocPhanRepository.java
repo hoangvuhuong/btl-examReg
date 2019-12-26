@@ -56,4 +56,11 @@ public class HocPhanRepository {
 		
 				
 	}
+	
+	public HocPhan getByName(String tenMon) {
+		String sql = "SELECT * FROM hoc_phan WHERE name =:name";
+		Map<String , Object> maps = new HashMap<String , Object>();
+		maps.put("name", tenMon);
+		return jdbcTemplate.queryForObject(sql, maps, new BeanPropertyRowMapper<HocPhan>(HocPhan.class));
+	}
 }
