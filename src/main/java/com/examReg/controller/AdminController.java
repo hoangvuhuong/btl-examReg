@@ -53,15 +53,14 @@ public class AdminController {
 	public ResponseContract<?> showuUser() {
 		return userService.getAll();
 	}
-	//show ca thi
+
+	// show ca thi
 	@GetMapping("/show-exam")
-	public ResponseContract<?> getAllExam(){
+	public ResponseContract<?> getAllExam() {
 		return userService.getAllExam();
 	}
-	
-	
-	
-	//tao ca thi
+
+	// tao ca thi
 	@PostMapping("/create-exam")
 	@Transactional(rollbackFor = Exception.class)
 	public ResponseContract<?> taoCaThi(@RequestBody ResponseCreateExam response) {
@@ -74,8 +73,8 @@ public class AdminController {
 			hp.setName(response.getCourseName());
 			hpRepository.create(hp);
 			// tao cathi_phongthi
-			for(String tenPhongThi :response.getPhongThi() ) {
-			ctptService.create(tenPhongThi, caThi.getId());
+			for (String tenPhongThi : response.getPhongThi()) {
+				ctptService.create(tenPhongThi, caThi.getId());
 			}
 //			// tao user_cathi
 //			for(String tenPhongThi :response.getPhongThi() ) {
@@ -93,14 +92,20 @@ public class AdminController {
 		}
 
 	}
+
 	@GetMapping("/get-all-pt")
-	public ResponseContract<?> getAllPt(){
+	public ResponseContract<?> getAllPt() {
 		return userService.getAllPt();
 	}
-	//show tat ca hoc phan
+
+	// show tat ca hoc phan
 	@GetMapping("/show-subjects")
-	public ResponseContract<?> getAllSubjects(){
+	public ResponseContract<?> getAllSubjects() {
 		return userService.getAllHocPhan();
 	}
 	
+	@GetMapping("/download")
+	public ResponseContract<?> download(){
+		return userService.adminDownload();
+	}
 }

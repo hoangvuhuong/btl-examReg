@@ -78,4 +78,16 @@ public class UserCathiRepository {
 		maps.put("cathiId", cathiId);
 		return jdbcTemplate.query(sql, maps, new BeanPropertyRowMapper<UserCathi>(UserCathi.class));
 	}
+	
+	public List<UserCathi> getByCathiId(int cathiId){
+		String sql = "SELECT * FROM user_cathi WHERE cathi_id =:cathiId;";
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put("cathiId", cathiId);
+		return jdbcTemplate.query(sql,maps ,new BeanPropertyRowMapper<UserCathi>(UserCathi.class));
+	}
+	
+	public List<UserCathi> getAll(){
+		String sql = "SELECT * FROM user_cathi;";
+		return jdbcTemplate.query(sql, new HashMap<>(), new BeanPropertyRowMapper<UserCathi>(UserCathi.class));
+	}
 }

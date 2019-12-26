@@ -48,4 +48,12 @@ public class HocPhanRepository {
 		return jdbcTemplate.queryForObject(sql, maps, new BeanPropertyRowMapper<HocPhan>(HocPhan.class));
 	}
 	
+	public String name(int cathiId) {
+		String sql = "SELECT name from hoc_phan WHERE cathi_id =:cathiId;";
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put("cathiId",cathiId);
+		return jdbcTemplate.queryForObject(sql, maps, String.class);
+		
+				
+	}
 }

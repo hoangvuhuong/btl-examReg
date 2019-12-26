@@ -88,4 +88,10 @@ public class UserRepository {
 			return null;
 		}
 	}
+	public User findById(int userId) {
+		String sql="SELECT * FROM user where user_id =:userId;";
+		Map<String, Object> argMap = new HashMap<>();
+		argMap.put("userId", userId);
+		return jdbcTemplate.queryForObject(sql, argMap, new BeanPropertyRowMapper<User>(User.class));
+	}
 }

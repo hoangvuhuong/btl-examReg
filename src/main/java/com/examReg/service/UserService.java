@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import org.omg.CORBA.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.examReg.contract.ResponseContract;
+import com.examReg.model.Admindownload;
 import com.examReg.model.CaThi;
 import com.examReg.model.CaThiPhongThi;
 import com.examReg.model.Exam;
@@ -336,6 +338,7 @@ public class UserService implements IUserService {
 				userCathi.setSbd(sbd);
 
 				// cap nhat slot
+				if(!checkDangKiThi(userCathi.getUserId(), phongthiId, userCathi.getCathiId(), sbd)) {
 				CaThiPhongThi ctpt = caThiphongThiRepository.getByIds(resonseReg.getCathiId(), phongthiId);
 				if (ctpt.getSlotConLai() > 0) {
 					int slot = ctpt.getSlotConLai() - 1;
@@ -344,6 +347,9 @@ public class UserService implements IUserService {
 					return new ResponseContract<Integer>("200", "OK", ucRepository.create(userCathi));
 				}
 				return new ResponseContract<String>("Loi", null, "Ca thi không còn chỗ nữa!!");
+				}
+				else
+					return new ResponseContract<String>("Ca thi nay da dang ki",null, null);
 			} else { // false khi huy dang ki
 				int phongthiId = phongthiRep.getIdByName(resonseReg.getTenPhong());
 				UserCathi userCathi = ucRepository.getByIds(resonseReg.getUserId(), resonseReg.getCathiId(),
@@ -361,7 +367,18 @@ public class UserService implements IUserService {
 			return new ResponseContract<String>("Loi", e.getMessage(), null);
 		}
 	}
-
+	private Boolean checkDangKiThi(int userId, int phongthiId, int cathiId, String sbd) {
+		List<UserCathi> list = ucRepository.getAll();
+		for(UserCathi uc : list) {
+			if(uc.getCathiId() == cathiId
+					&& uc.getUserId() == userId
+					&& uc.getSbd().equals(sbd)
+					&& uc.getPhongthiId() == phongthiId) {
+				return true;
+			}
+		}
+		return false;
+	}
 	@Override
 	public ResponseContract<?> getDownload(int userId) {
 		try {
@@ -404,6 +421,43 @@ public class UserService implements IUserService {
 			e.printStackTrace();
 			return new ResponseContract<String>("Loi", e.getMessage(), null);
 		}
+	}
+
+	@Override
+	public ResponseContract<?> adminDownload() {
+		try {
+			List<CaThi> listCaThi = cathiRepository.getAll();
+			List<Map<String, List<Admindownload>>> adminDownloads = new ArrayList<Map<String, List<Admindownload>>>();
+			for(CaThi cathi : listCaThi) {
+				SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
+				String ngayThi = date.format(cathi.getNgayThi());
+				Map<String, List<Admindownload>> maps = new HashMap<String , List<Admindownload>>();
+				List<Admindownload> list = new ArrayList<Admindownload>();
+				String tenMon = hocphanRepository.name(cathi.getId());
+				
+				List<UserCathi> listUserCathi = ucRepository.getByCathiId(cathi.getId());
+				for(UserCathi uc : listUserCathi) {
+					Admindownload adminDownload = new Admindownload();
+					adminDownload.setName(cathi.getName() + " ngày " + ngayThi);
+					adminDownload.setMssv(userRepository.findById(uc.getUserId()).getUserName());
+					adminDownload.setHoten(userRepository.findById(uc.getUserId()).getName());
+					adminDownload.setMonThi(tenMon);
+					adminDownload.setPhongThi(phongthiRep.getNameById(uc.getPhongthiId()));
+					adminDownload.setSbd(uc.getSbd());
+					list.add(adminDownload);
+					
+				}
+				
+				maps.put(cathi.getName() + "ngày" + ngayThi, list);
+				adminDownloads.add(maps);
+
+			}
+			return new ResponseContract<List<Map<String, List<Admindownload>>>>("200", "OK", adminDownloads);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseContract<String>("Loi", e.getMessage(), null); 
+		}
+	
 	}
 
 }

@@ -38,4 +38,6 @@ public interface IUserService {
 	public ResponseContract<?> getDownload(int userId);
 	
 	public ResponseContract<?> getAllPt();
+	
+	public ResponseContract<?> adminDownload();
 }
