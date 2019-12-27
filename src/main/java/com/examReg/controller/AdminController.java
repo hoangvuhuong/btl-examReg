@@ -66,8 +66,9 @@ public class AdminController {
 	@Transactional(rollbackFor = Exception.class)
 	public ResponseContract<?> taoCaThi(@RequestBody ResponseCreateExam response) {
 		try {
-			caThiRepository.create(response.getCaThi());
-			CaThi caThi = caThiRepository.getCaThi(response.getCaThi());
+			int cathiId = caThiRepository.create(response.getCaThi());
+			//CaThi caThi = caThiRepository.getCaThi(response.getCaThi());
+			CaThi caThi = caThiRepository.getById(cathiId);
 			HocPhan hp = new HocPhan();
 			hp.setCathiId(caThi.getId());
 			hp.setMaHp(response.getCourseCode());
@@ -111,7 +112,7 @@ public class AdminController {
 	}
 	@DeleteMapping("/delete-course")
 	public ResponseContract<?> deleteCourse(@RequestBody Map<String, Object> input){
-		return userService.deleteCourse((String)input.get("tenMon"), (String)input.get("tenPhongthi"));
+		return userService.deleteCourse((String)input.get("tenMon"), (String)input.get("tenPhongThi"));
 		
 	}
 }
